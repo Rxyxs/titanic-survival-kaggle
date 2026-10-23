@@ -41,8 +41,8 @@ def eda(df: pd.DataFrame, y: pd.Series, meta: pd.DataFrame) -> dict:
                          tr.groupby(["Sex", "Pclass"])["Survived"].mean().round(3).items()},
     }
     # How many test passengers share a ticket with someone whose fate is known?
-    test_tickets = meta.loc[~meta.index.isin(y.index), "ticket"]
-    train_tickets = set(meta.loc[y.index, "ticket"])
+    test_tickets = meta.loc[~meta.index.isin(y.index), "group"]
+    train_tickets = set(meta.loc[y.index, "group"])
     out["test_with_labelled_ticket_mate"] = int(test_tickets.isin(train_tickets).sum())
     return out
 

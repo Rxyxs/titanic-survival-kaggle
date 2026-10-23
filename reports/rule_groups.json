@@ -1,0 +1,41 @@
+{
+  "ticket": {
+    "cv_mean": 0.8363,
+    "diff_vs_ticket": 0.0,
+    "diff_repeats_better_or_equal": 20,
+    "diff_repeat_std": 0.0,
+    "bets_per_418": 21.9,
+    "bet_precision": 0.973,
+    "groups_with_2plus": 216,
+    "passengers_in_groups": 596,
+    "largest_group": 11,
+    "test_women_boys_with_labelled_wb_mate": 71
+  },
+  "family": {
+    "cv_mean": 0.8402,
+    "diff_vs_ticket": 0.0039,
+    "diff_repeats_better_or_equal": 20,
+    "diff_repeat_std": 0.0018,
+    "bets_per_418": 23.3,
+    "bet_precision": 0.98,
+    "groups_with_2plus": 194,
+    "passengers_in_groups": 500,
+    "largest_group": 11,
+    "test_women_boys_with_labelled_wb_mate": 56
+  },
+  "union": {
+    "cv_mean": 0.8395,
+    "diff_vs_ticket": 0.0033,
+    "diff_repeats_better_or_equal": 20,
+    "diff_repeat_std": 0.0015,
+    "bets_per_418": 23.2,
+    "bet_precision": 0.975,
+    "groups_with_2plus": 234,
+    "passengers_in_groups": 635,
+    "largest_group": 11,
+    "test_women_boys_with_labelled_wb_mate": 74
+  },
+  "chosen": "family",
+  "n_repeats": 20,
+  "test_predictions_changed_vs_ticket": 3
+}

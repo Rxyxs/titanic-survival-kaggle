@@ -26,14 +26,61 @@ def title_of(name: str) -> str:
     return TITLE_MAP.get(raw, "Rare")
 
 
-def passenger_meta(df: pd.DataFrame) -> pd.DataFrame:
+GROUPINGS = ("ticket", "family", "union")
+
+
+def family_key(df: pd.DataFrame) -> pd.Series:
+    """Surname + class + ticket without its last character + fare + port.
+
+    Two passengers with the same surname are only the same family if they also travelled
+    on matching tickets in the same class from the same port; common surnames (Smith,
+    Johnson) would otherwise merge strangers."""
+    surname = df["Name"].str.split(",", n=1).str[0].str.strip()
+    return (surname + "|" + df["Pclass"].astype(str) + "|" + df["Ticket"].str[:-1] + "|"
+            + df["Fare"].astype(str) + "|" + df["Embarked"].astype(str))
+
+
+def _components(*keys: pd.Series) -> pd.Series:
+    """Connected components of passengers linked by any shared key (union-find)."""
+    parent = list(range(len(keys[0])))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    for key in keys:
+        first = {}
+        for i, k in enumerate(key.to_numpy()):
+            if k in first:
+                a, b = find(i), find(first[k])
+                if a != b:
+                    parent[a] = b
+            else:
+                first[k] = i
+    return pd.Series([f"g{find(i)}" for i in range(len(parent))], index=keys[0].index)
+
+
+def group_key(df: pd.DataFrame, how: str = "ticket") -> pd.Series:
+    """ticket: same ticket. family: same family key. union: linked by either."""
+    if how == "ticket":
+        return df["Ticket"]
+    if how == "family":
+        return family_key(df)
+    if how == "union":
+        return _components(df["Ticket"], family_key(df))
+    raise ValueError(how)
+
+
+def passenger_meta(df: pd.DataFrame, grouping: str = "ticket") -> pd.DataFrame:
     """Columns needed by both feature sets and by the rule-based model."""
     meta = pd.DataFrame(index=df.index)
     meta["title"] = df["Name"].map(title_of)
     meta["female"] = (df["Sex"] == "female").astype(int)
     meta["boy"] = (meta["title"] == "Master").astype(int)
     meta["woman_or_boy"] = ((meta["female"] == 1) | (meta["boy"] == 1)).astype(int)
-    meta["ticket"] = df["Ticket"]
+    meta["group"] = group_key(df, grouping)
     return meta
 
 
@@ -91,9 +138,9 @@ def group_features(
 
     def mate_stats(mask: pd.Series) -> tuple[pd.Series, pd.Series]:
         sub = known[mask.loc[known.index].astype(bool)]
-        s = sub.groupby("ticket")["y"].agg(["sum", "count"])
-        tot_sum = meta["ticket"].map(s["sum"]).fillna(0.0)
-        tot_cnt = meta["ticket"].map(s["count"]).fillna(0.0)
+        s = sub.groupby("group")["y"].agg(["sum", "count"])
+        tot_sum = meta["group"].map(s["sum"]).fillna(0.0)
+        tot_cnt = meta["group"].map(s["count"]).fillna(0.0)
         if exclude_self:
             own = mask & meta.index.isin(known.index)
             own_y = known["y"].reindex(meta.index).fillna(0.0)

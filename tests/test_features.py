@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import pytest
 
-from titanic.features import (base_features, group_features, passenger_meta, title_of,
+from titanic.features import (base_features, group_features, group_key, passenger_meta, title_of,
                               woman_boy_rule)
 
 
@@ -69,3 +69,23 @@ def test_woman_boy_rule():
     # Mother survived -> the boy is predicted to survive.
     G = group_features(meta, pd.Series([1], index=[0]))
     assert woman_boy_rule(meta, G).loc[1] == 1
+
+
+def test_family_key_separates_strangers_with_same_surname():
+    df = frame()
+    df.loc[3, "Name"] = "Smith, Mr. Bob"  # same surname as ticket A, different ticket/class
+    key = group_key(df, "family")
+    assert key[0] == key[1] == key[2]
+    assert key[3] != key[0]
+
+
+def test_union_links_family_and_ticket():
+    df = frame()
+    # Passenger 4 shares a ticket with nobody, but is family of passenger 3 (ticket B).
+    df.loc[4, ["Name", "Pclass", "Ticket", "Fare", "Embarked"]] = \
+        ["Jones, Mrs. Ann", 1, "B2", 80.0, None]
+    df.loc[3, "Ticket"] = "B1"  # same ticket prefix "B", same fare and port
+    g = group_key(df, "union")
+    assert g[3] == g[4]
+    assert g[0] == g[1] == g[2] != g[3]
+    assert group_key(df, "ticket")[3] != group_key(df, "ticket")[4]

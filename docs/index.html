@@ -63,13 +63,13 @@
 <div class="wrap">
 <header>
   <h1>Why a two-line rule beats seven tuned models</h1>
-  <p class="lede">The Kaggle Titanic competition: 891 passengers to learn from, 418 to predict. Seven model families with nested cross-validation reach <strong>84% accuracy in CV</strong> and land at <strong>77% on the leaderboard</strong>. A rule built on the gender baseline plus one family correction scores <strong>79.7%</strong>. This page explains the gap.</p>
+  <p class="lede">The Kaggle Titanic competition: 891 passengers to learn from, 418 to predict. Seven model families with nested cross-validation reach <strong>84% accuracy in CV</strong> and land at <strong>77% on the leaderboard</strong>. A rule built on the gender baseline plus one family correction scores <strong>79.9%</strong>. This page explains the gap.</p>
   <div class="links">
     <a href="https://github.com/Rxyxs/titanic-survival-kaggle">Code on GitHub</a>
     <a href="https://www.kaggle.com/competitions/titanic">Kaggle competition</a>
   </div>
   <div class="stats">
-    <div class="stat"><b>0.797</b><span>best Kaggle score (woman-boy rule, 333 of 418)</span></div>
+    <div class="stat"><b>0.799</b><span>best Kaggle score (woman-boy rule by family, 334 of 418)</span></div>
     <div class="stat"><b>0.775</b><span>best machine-learning submission (7-model ensemble)</span></div>
     <div class="stat"><b>79% &rarr; 56%</b><span>accuracy of the ensemble's bets against the gender rule, CV vs test</span></div>
     <div class="stat"><b>0.986 &rarr; 0.641</b><span>CV vs Kaggle with a leaking group feature</span></div>
@@ -82,7 +82,8 @@
   <thead><tr><th>Submission</th><th>CV</th><th>Kaggle</th></tr></thead>
   <tbody>
     <tr><td>Gender rule</td><td>0.787</td><td>0.76555</td></tr>
-    <tr class="win"><td>Woman-boy rule</td><td>0.837</td><td>0.79665</td></tr>
+    <tr class="win"><td>Woman-boy rule, family groups (chosen by CV)</td><td>0.840</td><td>0.79904</td></tr>
+    <tr><td>Woman-boy rule, ticket groups</td><td>0.837</td><td>0.79665</td></tr>
     <tr><td>Ensemble (soft vote, 7 models) + ticket groups</td><td>0.846</td><td>0.77511</td></tr>
     <tr><td>Logistic regression + ticket groups</td><td>0.841</td><td>0.77272</td></tr>
     <tr><td>Ensemble (soft vote), no groups</td><td>0.835</td><td>0.76794</td></tr>
@@ -117,10 +118,22 @@
   <figcaption>Exploratory analysis: sex and class dominate, and the title separates boys (Master, 57%) from men (Mr, 16%).</figcaption>
 </figure>
 
-<h2><span class="num">05</span>Caveats</h2>
+<h2><span class="num">05</span>Family, not ticket</h2>
+<p>A ticket links companions who are not family and splits families who bought separate tickets. On the same 100 folds (5-fold x 20 repeats), grouping by family key (surname + class + ticket without its last digit + fare + port) lifts the rule's CV from 0.836 to 0.840, better in all 20 repeats; linking by either key gives 0.840 too.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Group</th><th>Rule CV</th><th>Bet precision (CV)</th><th>Kaggle</th></tr></thead>
+  <tbody>
+    <tr><td>Same ticket</td><td>0.836</td><td>97.3%</td><td>0.79665</td></tr>
+    <tr class="win"><td>Same family</td><td>0.840</td><td>98.0%</td><td>0.79904</td></tr>
+    <tr><td>Linked by either</td><td>0.840</td><td>97.5%</td><td>not submitted</td></tr>
+  </tbody>
+</table></div>
+<p>The family grouping was chosen on CV and submitted once. It changes 3 test predictions and gains one passenger on Kaggle (15 of its 16 test bets right): the same direction as CV, but one passenger is within the noise.</p>
+
+<h2><span class="num">06</span>Caveats</h2>
 <ul>
   <li>418 test passengers make any leaderboard difference below about four points fragile; the bet analysis shows the direction of the gap, not its exact size.</li>
-  <li>No model was chosen with leaderboard feedback: all seven files came from one pipeline run and were submitted together.</li>
+  <li>No model was chosen with leaderboard feedback: the first seven files came from one pipeline run and were submitted together; the family rule was picked by CV and submitted once.</li>
   <li>The public score covers the whole test set, so there is no private score to check against.</li>
 </ul>
 

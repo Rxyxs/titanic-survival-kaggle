@@ -16,8 +16,8 @@ de modelos con validación cruzada anidada, dos ensembles y envíos. Después me
 pregunta que el leaderboard obliga a hacer: **¿por qué modelos que marcan 84% en validación
 cruzada caen a 77% en el test, mientras una regla simple se sostiene?**
 
-**Mejor puntaje en Kaggle: 0.79665** (333 de 418 pasajeros), con la regla mujer-niño. El
-mejor envío de machine learning sacó 0.77511.
+**Mejor puntaje en Kaggle: 0.79904** (334 de 418 pasajeros), con la regla mujer-niño
+agrupada por familia. El mejor envío de machine learning sacó 0.77511.
 
 **Página del proyecto:** https://rxyxs.github.io/titanic-survival-kaggle/
 
@@ -31,7 +31,8 @@ usan 5 folds x 10 repeticiones. Kaggle evalúa cada envío sobre los 418 pasajer
 | Envío | Accuracy CV | Kaggle |
 |---|---|---|
 | Regla de género (mujeres sobreviven, hombres no) | 0.787 | 0.76555 |
-| **Regla mujer-niño** (género + corrección por grupo de pasaje) | 0.837 | **0.79665** |
+| **Regla mujer-niño, grupos por familia** (elegida por CV, ver hallazgo 5) | 0.840 | **0.79904** |
+| Regla mujer-niño, grupos por pasaje | 0.837 | 0.79665 |
 | Ensemble, voto suave de 7 modelos + variables de grupo | 0.846 | 0.77511 |
 | Regresión logística + variables de grupo | 0.841 | 0.77272 |
 | Ensemble, voto suave de 7 modelos, sin variables de grupo | 0.835 | 0.76794 |
@@ -51,7 +52,8 @@ etiquetas del test: `apuestas netas correctas = (puntaje - puntaje género) x 41
 |---|---|---|---|---|
 | Regresión logística + grupos | 40 | 78% | 33 | 55% (18 de 33) |
 | Ensemble + grupos | 40 | 79% | 32 | 56% (18 de 32) |
-| Regla mujer-niño | 22 | 97% | 15 | **93% (14 de 15)** |
+| Regla mujer-niño, grupos por pasaje | 22 | 97% | 15 | **93% (14 de 15)** |
+| Regla mujer-niño, grupos por familia | 23 | 98% | 16 | **94% (15 de 16)** |
 
 ![Apuestas](docs/img/bets.png)
 
@@ -95,6 +97,22 @@ entre 0.829 y 0.841, y el ensemble (0.846) está a menos de una desviación est�
 modelo individual. En el leaderboard, el ensemble de voto suave le gana a la regresión
 logística por exactamente un pasajero.
 
+**5. Agrupar por familia en vez de por pasaje mejora un poco la regla, y la CV lo dice antes
+que el leaderboard.** Un pasaje une a acompañantes que no son familia (niñeras, amigos) y
+separa a familias que compraron pasajes distintos. Comparé tres agrupaciones sobre los mismos
+100 folds (5 folds x 20 repeticiones):
+
+| Grupo = | CV regla | vs pasaje | Repeticiones mejores | Precisión apuestas (CV) |
+|---|---|---|---|---|
+| Mismo pasaje | 0.836 | | | 97,3% |
+| **Misma familia**: apellido + clase + pasaje sin último dígito + tarifa + puerto | **0.840** | +0.39 | 20 de 20 | 98,0% |
+| Unidos por cualquiera de los dos (componentes conexas) | 0.840 | +0.33 | 20 de 20 | 97,5% |
+
+La agrupación por familia se eligió solo por CV y se envió una vez. Cambia 3 de las 418
+predicciones del test; Kaggle pasó de 0.79665 a 0.79904, un pasajero más acertado (16
+apuestas en el test, 15 correctas). Coincide con la CV en la dirección, pero un pasajero está
+dentro del ruido, así que la lectura honesta es "algo mejor, no demostradamente mejor".
+
 ## Enfoque
 
 Los pasos de la propia competencia: aceptar reglas, descargar, entender, EDA, entrenar,
@@ -123,8 +141,9 @@ ajustar y combinar, enviar.
   precisión de las apuestas en predicciones fuera de fold vs. las que implican los puntajes
   públicos.
 
-No usé el leaderboard para elegir modelo: los siete archivos salieron de una sola corrida
-del pipeline antes de enviar nada, y se enviaron juntos.
+No usé el leaderboard para elegir modelo: los primeros siete archivos salieron de una sola
+corrida del pipeline antes de enviar nada, y se enviaron juntos. El octavo (grupos por
+familia) se eligió por CV entre tres agrupaciones y se envió una sola vez.
 
 ## Datos
 
@@ -142,6 +161,8 @@ $env:PYTHONPATH = "src"
 python -m titanic.data       # descarga (requiere ~/.kaggle/kaggle.json y reglas aceptadas)
 python -m titanic.run        # EDA, baselines, CV anidada, fugas, envíos (~5 min)
 python -m titanic.submit gender woman_boy_rule xgboost_base ensemble_soft_base logreg_group ensemble_soft_group lightgbm_leaky
+python -m titanic.rule_groups  # grupos por pasaje, familia o ambos para la regla; elige por CV
+python -m titanic.submit woman_boy_rule_family
 python -m titanic.bets       # apuestas: CV vs leaderboard
 python -m titanic.figures '{\"gender\":\"gender\",\"rule_honest\":\"woman_boy_rule\",\"logreg\":\"logreg_group\",\"ensemble_soft\":\"ensemble_soft_group\"}'
 pytest -q tests
@@ -155,10 +176,11 @@ src/titanic/  data.py      descarga y carga
               models.py    modelos, CV anidada, ajustes finales
               run.py       pipeline
               submit.py    envío con el CLI de Kaggle y puntajes
+              rule_groups.py  definiciones de grupo para la regla, elegida por CV
               bets.py      precisión de las apuestas, CV vs leaderboard
               figures.py   figuras
 reports/      cada número de este README (JSON)
-submissions/  los siete archivos enviados
+submissions/  los ocho archivos enviados
 tests/        tests de variables y de aislamiento entre folds
 ```
 

@@ -20,6 +20,15 @@
     }
   },
   "test": {
+    "woman_boy_rule_family": {
+      "bets_per_passenger": 0.0383,
+      "bets": 16,
+      "precision": 0.938,
+      "men_predicted_to_survive": 8,
+      "women_predicted_to_die": 8,
+      "net_correct_bets": 14,
+      "public_score": 0.79904
+    },
     "lightgbm_leaky": {
       "bets_per_passenger": 0.3301,
       "bets": 138,
