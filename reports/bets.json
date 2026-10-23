@@ -1,0 +1,78 @@
+{
+  "cv": {
+    "logreg_group": {
+      "bets_per_passenger": 0.095,
+      "precision": 0.775,
+      "men_predicted_to_survive": 50.3,
+      "women_predicted_to_die": 34.3
+    },
+    "ensemble_soft_group": {
+      "bets_per_passenger": 0.095,
+      "precision": 0.791,
+      "men_predicted_to_survive": 49.3,
+      "women_predicted_to_die": 35.3
+    },
+    "woman_boy_rule": {
+      "bets_per_passenger": 0.052,
+      "precision": 0.972,
+      "men_predicted_to_survive": 15.3,
+      "women_predicted_to_die": 31.0
+    }
+  },
+  "test": {
+    "lightgbm_leaky": {
+      "bets_per_passenger": 0.3301,
+      "bets": 138,
+      "precision": 0.312,
+      "men_predicted_to_survive": 112,
+      "women_predicted_to_die": 26,
+      "net_correct_bets": -52,
+      "public_score": 0.64114
+    },
+    "ensemble_soft_group": {
+      "bets_per_passenger": 0.0766,
+      "bets": 32,
+      "precision": 0.562,
+      "men_predicted_to_survive": 21,
+      "women_predicted_to_die": 11,
+      "net_correct_bets": 4,
+      "public_score": 0.77511
+    },
+    "logreg_group": {
+      "bets_per_passenger": 0.0789,
+      "bets": 33,
+      "precision": 0.545,
+      "men_predicted_to_survive": 25,
+      "women_predicted_to_die": 8,
+      "net_correct_bets": 3,
+      "public_score": 0.77272
+    },
+    "ensemble_soft_base": {
+      "bets_per_passenger": 0.0837,
+      "bets": 35,
+      "precision": 0.514,
+      "men_predicted_to_survive": 21,
+      "women_predicted_to_die": 14,
+      "net_correct_bets": 1,
+      "public_score": 0.76794
+    },
+    "xgboost_base": {
+      "bets_per_passenger": 0.1292,
+      "bets": 54,
+      "precision": 0.481,
+      "men_predicted_to_survive": 28,
+      "women_predicted_to_die": 26,
+      "net_correct_bets": -2,
+      "public_score": 0.76076
+    },
+    "woman_boy_rule": {
+      "bets_per_passenger": 0.0359,
+      "bets": 15,
+      "precision": 0.933,
+      "men_predicted_to_survive": 8,
+      "women_predicted_to_die": 7,
+      "net_correct_bets": 13,
+      "public_score": 0.79665
+    }
+  }
+}

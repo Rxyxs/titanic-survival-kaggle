@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titanic Leaderboard Gap</title>
+<meta name="description" content="Why a two-line rule beats seven tuned models on the Kaggle Titanic leaderboard: bets, leaks and noise.">
+<style>
+  :root {
+    --bg: #FBFAF8; --surface: #FFFFFF; --ink: #23201D; --muted: #6B645D;
+    --line: #E3DED7; --accent: #B5553D; --good: #4C7A3E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #151719; --surface: #1D2023; --ink: #E9EBED; --muted: #A2A8AE;
+      --line: #2E3236; --accent: #D9765C; --good: #7FAE6B;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #151719; --surface: #1D2023; --ink: #E9EBED; --muted: #A2A8AE;
+    --line: #2E3236; --accent: #D9765C; --good: #7FAE6B;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 16px 96px; }
+  header { padding: 72px 0 40px; border-bottom: 1px solid var(--line); margin-bottom: 44px; }
+  h1 { font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.15; margin: 0 0 18px; letter-spacing: -0.02em; }
+  .lede { font-size: clamp(1.02rem, 2.4vw, 1.17rem); color: var(--muted); margin: 0 0 24px; max-width: 64ch; }
+  .lede strong { color: var(--ink); }
+  .links a {
+    display: inline-block; margin: 0 10px 10px 0; padding: 9px 15px;
+    border: 1px solid var(--line); border-radius: 7px; text-decoration: none;
+    color: var(--ink); background: var(--surface); font-size: 0.9rem; transition: border-color .15s;
+  }
+  .links a:hover { border-color: var(--accent); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 28px 0 0; }
+  .stat { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 1.6rem; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .stat span { color: var(--muted); font-size: 0.85rem; }
+  h2 { font-size: 1.42rem; margin: 56px 0 8px; letter-spacing: -0.01em; padding-top: 10px; border-top: 1px solid var(--line); }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 8px; }
+  p, li { max-width: 72ch; }
+  p { margin: 0 0 16px; }
+  figure { margin: 26px 0; }
+  figure img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 9px; background: #fff; }
+  figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 9px; max-width: 72ch; }
+  .tablewrap { overflow-x: auto; margin: 22px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 460px; }
+  th, td { padding: 9px 12px; text-align: right; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .win td { color: var(--good); font-weight: 600; }
+  code { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; font-size: 0.88em; }
+  footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Why a two-line rule beats seven tuned models</h1>
+  <p class="lede">The Kaggle Titanic competition: 891 passengers to learn from, 418 to predict. Seven model families with nested cross-validation reach <strong>84% accuracy in CV</strong> and land at <strong>77% on the leaderboard</strong>. A rule built on the gender baseline plus one family correction scores <strong>79.7%</strong>. This page explains the gap.</p>
+  <div class="links">
+    <a href="https://github.com/Rxyxs/titanic-survival-kaggle">Code on GitHub</a>
+    <a href="https://www.kaggle.com/competitions/titanic">Kaggle competition</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>0.797</b><span>best Kaggle score (woman-boy rule, 333 of 418)</span></div>
+    <div class="stat"><b>0.775</b><span>best machine-learning submission (7-model ensemble)</span></div>
+    <div class="stat"><b>79% &rarr; 56%</b><span>accuracy of the ensemble's bets against the gender rule, CV vs test</span></div>
+    <div class="stat"><b>0.986 &rarr; 0.641</b><span>CV vs Kaggle with a leaking group feature</span></div>
+  </div>
+</header>
+
+<h2><span class="num">01</span>Cross-validation vs the leaderboard</h2>
+<p>Nested CV (outer 5-fold x 3 repeats, inner grid search) for the models, 5-fold x 10 repeats for the rules. Kaggle scores all 418 test passengers, so one passenger is 0.24 points.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Submission</th><th>CV</th><th>Kaggle</th></tr></thead>
+  <tbody>
+    <tr><td>Gender rule</td><td>0.787</td><td>0.76555</td></tr>
+    <tr class="win"><td>Woman-boy rule</td><td>0.837</td><td>0.79665</td></tr>
+    <tr><td>Ensemble (soft vote, 7 models) + ticket groups</td><td>0.846</td><td>0.77511</td></tr>
+    <tr><td>Logistic regression + ticket groups</td><td>0.841</td><td>0.77272</td></tr>
+    <tr><td>Ensemble (soft vote), no groups</td><td>0.835</td><td>0.76794</td></tr>
+    <tr><td>XGBoost, no groups</td><td>0.837</td><td>0.76076</td></tr>
+    <tr><td>LightGBM with a leaking group feature</td><td>0.986</td><td>0.64114</td></tr>
+  </tbody>
+</table></div>
+<figure>
+  <img src="img/validation.png" alt="Dot plot of CV accuracy per model, all between 83% and 85%, with Kaggle scores as diamonds between 76.6% and 79.7%; the woman-boy rule has the highest Kaggle score.">
+  <figcaption>Light dots are the three CV repeats, the dark dot their mean. Every submitted model falls six to seven points from CV to Kaggle; the rule falls four, the gender baseline two.</figcaption>
+</figure>
+
+<h2><span class="num">02</span>The models' bets are a coin flip on new passengers</h2>
+<p>Sex alone explains most of the outcome, so every model is the gender rule plus a few dozen bets: a man predicted to survive, or a woman predicted to die. Since the gender rule was submitted too, the value of the bets on the test set follows from the two scores, <code>net correct = (score &minus; gender score) &times; 418</code>, without any test label.</p>
+<figure>
+  <img src="img/bets.png" alt="Bar chart of the share of bets that are right: logistic regression 78% in CV vs 55% on test, ensemble 79% vs 56%, woman-boy rule 97% vs 93%.">
+  <figcaption>The models' bets come from patterns in 891 passengers (first-class men, large third-class families) that do not transfer. The rule bets only on direct evidence from ticket mates, and 14 of its 15 test bets are right.</figcaption>
+</figure>
+<p>The gender rule has nothing to fit and still drops two points from CV to Kaggle, one standard error on 418 passengers. The models drop six to seven, so roughly four points are bets that do not generalize. Hyperparameter tuning adds only 0.5 points of optimism on average.</p>
+
+<h2><span class="num">03</span>The useful feature is also the one that leaks</h2>
+<p>596 of the 1,309 passengers share one of 216 tickets, and 152 test passengers share a ticket with someone in training. A passenger's ticket-group feature is the survival rate of their ticket mates, and the labels it may use decide what CV reports.</p>
+<figure>
+  <img src="img/leak.png" alt="Grouped bars of CV accuracy: using training-fold labels only gives 83.7 to 84.1%, all labels except own 84.2 to 84.3%, all labels including own 89.9 to 98.9%.">
+  <figcaption>With the passenger's own label included, a passenger travelling alone carries the answer in the feature. That model predicts 57% survival on the test set and scores 0.641, below the gender rule.</figcaption>
+</figure>
+
+<h2><span class="num">04</span>With 891 rows, model choice is noise</h2>
+<p>Fold-to-fold standard deviation is about 2 points, and XGBoost moves from 0.826 to 0.854 between CV repeats. All seven tuned families land between 0.829 and 0.841; on the leaderboard the ensemble beats logistic regression by one passenger.</p>
+<figure>
+  <img src="img/eda.png" alt="Left: survival by sex and class, women 97%, 92%, 50% across classes, men 37%, 16%, 14%. Right: survival by title, Mrs 80%, Miss 70%, Master 57%, Rare 29%, Mr 16%.">
+  <figcaption>Exploratory analysis: sex and class dominate, and the title separates boys (Master, 57%) from men (Mr, 16%).</figcaption>
+</figure>
+
+<h2><span class="num">05</span>Caveats</h2>
+<ul>
+  <li>418 test passengers make any leaderboard difference below about four points fragile; the bet analysis shows the direction of the gap, not its exact size.</li>
+  <li>No model was chosen with leaderboard feedback: all seven files came from one pipeline run and were submitted together.</li>
+  <li>The public score covers the whole test set, so there is no private score to check against.</li>
+</ul>
+
+<footer>
+  Pablo Reyes · Data: Titanic - Machine Learning from Disaster, Kaggle (not redistributed). Code under MIT.
+</footer>
+</div>
+</body>
+</html>

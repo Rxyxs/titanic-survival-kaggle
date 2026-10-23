@@ -1,0 +1,51 @@
+[
+  {
+    "name": "lightgbm_leaky",
+    "date": "2026-10-23 15:57:58.157000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.64114",
+    "private_score": ""
+  },
+  {
+    "name": "ensemble_soft_group",
+    "date": "2026-10-23 15:57:55.557000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.77511",
+    "private_score": ""
+  },
+  {
+    "name": "logreg_group",
+    "date": "2026-10-23 15:57:52.913000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.77272",
+    "private_score": ""
+  },
+  {
+    "name": "ensemble_soft_base",
+    "date": "2026-10-23 15:57:50",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.76794",
+    "private_score": ""
+  },
+  {
+    "name": "xgboost_base",
+    "date": "2026-10-23 15:57:47.407000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.76076",
+    "private_score": ""
+  },
+  {
+    "name": "woman_boy_rule",
+    "date": "2026-10-23 15:57:44.197000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.79665",
+    "private_score": ""
+  },
+  {
+    "name": "gender",
+    "date": "2026-10-23 15:57:41.283000",
+    "status": "SubmissionStatus.COMPLETE",
+    "public_score": "0.76555",
+    "private_score": ""
+  }
+]

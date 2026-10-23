@@ -1,0 +1,80 @@
+{
+  "base": {
+    "best_single": "xgboost",
+    "params": {
+      "logreg": {
+        "logisticregression__C": 0.1
+      },
+      "svm": {
+        "svc__C": 0.3,
+        "svc__gamma": "scale"
+      },
+      "knn": {
+        "kneighborsclassifier__n_neighbors": 15
+      },
+      "random_forest": {
+        "max_depth": 6,
+        "min_samples_leaf": 3
+      },
+      "lightgbm": {
+        "min_child_samples": 10,
+        "num_leaves": 8
+      },
+      "xgboost": {
+        "max_depth": 4,
+        "min_child_weight": 1
+      },
+      "catboost": {
+        "depth": 4
+      }
+    },
+    "test_survival_rate": {
+      "logreg": 0.409,
+      "svm": 0.407,
+      "knn": 0.421,
+      "random_forest": 0.373,
+      "lightgbm": 0.378,
+      "xgboost": 0.368,
+      "catboost": 0.371
+    }
+  },
+  "group": {
+    "best_single": "logreg",
+    "params": {
+      "logreg": {
+        "logisticregression__C": 0.03
+      },
+      "svm": {
+        "svc__C": 0.3,
+        "svc__gamma": 0.01
+      },
+      "knn": {
+        "kneighborsclassifier__n_neighbors": 25
+      },
+      "random_forest": {
+        "max_depth": 6,
+        "min_samples_leaf": 3
+      },
+      "lightgbm": {
+        "min_child_samples": 10,
+        "num_leaves": 8
+      },
+      "xgboost": {
+        "max_depth": 3,
+        "min_child_weight": 1
+      },
+      "catboost": {
+        "depth": 3
+      }
+    },
+    "test_survival_rate": {
+      "logreg": 0.404,
+      "svm": 0.383,
+      "knn": 0.383,
+      "random_forest": 0.38,
+      "lightgbm": 0.383,
+      "xgboost": 0.376,
+      "catboost": 0.38
+    }
+  }
+}
